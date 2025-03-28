@@ -204,6 +204,15 @@ plt.ylabel("Temps d'exécution (en secondes)")
 plt.savefig("comparaison_modeles_cpu_gpu.png", dpi=300)
 plt.show()
 
+plt.plot(RANGE, tab_model_pruned_cpu, label="Model CPU")
+plt.plot(RANGE, tab_model_pruned_gpu, label="Model GPU")
+plt.legend()
+plt.title("Comparaison entre les modèles prunés (CPU vs GPU)")
+plt.xlabel("Taille du dataset")
+plt.ylabel("Temps d'exécution (en secondes)")
+plt.savefig("comparaison_modeles_cpu_gpu_pruned.png", dpi=300)
+plt.show()
+
 df_model = df_model[df_model["predict_model"]!=2]
 df_model2 = df_model[df_model["sentiment"]==df_model['predict_model']]
 result = df_model2.count()/df_model.count()*100
