@@ -20,6 +20,14 @@ class_mapping = {"negative": 0, "positive": 1}
 df["sentiment"] = df["sentiment"].map(class_mapping).astype(int)
 df.head()
 
+import os
+
+def print_model_size(model, model_name):
+    torch.save(model.state_dict(), f"{model_name}.pth")
+    size = os.path.getsize(f"{model_name}.pth") / 1e6  # size in MB
+    print(f"{model_name} size: {size:.2f} MB")
+    os.remove(f"{model_name}.pth")
+
 model_name = "nlptown/bert-base-multilingual-uncased-sentiment"
 
 # Load pre-trained BERT tokenizer
@@ -27,6 +35,8 @@ tokenizer = BertTokenizer.from_pretrained(model_name)
 
 # Load pre-trained BERT model
 model = BertForSequenceClassification.from_pretrained(model_name)
+
+print_model_size(model, "Original BERT")
 
 torch.save(model.state_dict(), "model.pt")
 
@@ -69,13 +79,14 @@ quantized_model_pruned = torch.quantization.quantize_dynamic(
     dtype=torch.qint8,  # specify the target dtype for weights
 )
 
-import os
+model_prunedGPU = BertForSequenceClassification.from_pretrained(model_name)
+model_prunedGPU.load_state_dict(torch.load("model_pruned.pt"))
 
-def print_model_size(model, model_name):
-    torch.save(model.state_dict(), f"{model_name}.pth")
-    size = os.path.getsize(f"{model_name}.pth") / 1e6  # size in MB
-    print(f"{model_name} size: {size:.2f} MB")
-    os.remove(f"{model_name}.pth")
+quantized_model_pruned = torch.quantization.quantize_dynamic(
+    model_prunedGPU,  # the original model
+    {nn.Linear},  # specify the layers to quantize
+    dtype=torch.qint8,  # specify the target dtype for weights
+)
 
 print_model_size(model, "Original BERT")
 print_model_size(model_pruned, "Pruned BERT")
@@ -112,9 +123,16 @@ def predict_gpu(text, model, classes):
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-model.to(device)
+model = model.to("cpu")
+
+modelGPU = BertForSequenceClassification.from_pretrained(model_name)
+modelGPU = model.to(device)
+
 quantized_model.to("cpu")
-model_pruned.to(device)
+
+model_pruned.to("cpu")
+model_prunedGPU.to(device)
+
 quantized_model_pruned.to("cpu")
 
 RANGE = range(0,100,20)
@@ -159,15 +177,15 @@ plt.ylabel("Temps d'exécution (en secondes)")
 plt.savefig("comparaison_modeles_cpu.png", dpi=300)
 plt.show()
 
-tab_model_gpu = tab_temps_gpu(n, df, model)
-tab_quantized_model_gpu = tab_temps_gpu(n, df, quantized_model)
-tab_model_pruned_gpu = tab_temps_gpu(n, df, model_pruned)
-tab_quantized_model_pruned_gpu = tab_temps_gpu(n, df, quantized_model_pruned)
+tab_model_gpu = tab_temps_gpu(n, df, modelGPU)
+# tab_quantized_model_gpu = tab_temps_gpu(n, df, quantized_model)
+tab_model_pruned_gpu = tab_temps_gpu(n, df, model_prunedGPU)
+# tab_quantized_model_pruned_gpu = tab_temps_gpu(n, df, quantized_model_pruned)
 
 plt.plot(RANGE, tab_model_gpu, label="Model")
-plt.plot(RANGE, tab_quantized_model_gpu, label="Quantized Model")
+# plt.plot(RANGE, tab_quantized_model_gpu, label="Quantized Model")
 plt.plot(RANGE, tab_model_pruned_gpu, label="Pruned Model")
-plt.plot(RANGE, tab_quantized_model_pruned_gpu, label="Quantized + Pruned")
+# plt.plot(RANGE, tab_quantized_model_pruned_gpu, label="Quantized + Pruned")
 plt.legend()
 plt.title("Comparaison entre les modèles (Calculs sur GPU)")
 plt.xlabel("Taille du dataset")
