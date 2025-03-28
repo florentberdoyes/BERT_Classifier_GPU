@@ -225,19 +225,19 @@ plt.show()
 df_model = df_model[df_model["predict_model"]!=2]
 df_model2 = df_model[df_model["sentiment"]==df_model['predict_model']]
 result = df_model2.count()/df_model.count()*100
-result.values[0]
+print(result.values[0])
 
 df_quantized_model = df_quantized_model[df_quantized_model["predict_model"]!=2]
 df_quantized_model2 = df_quantized_model[df_quantized_model["sentiment"]==df_quantized_model['predict_model']]
 result_quantized = df_quantized_model2.count()/df_quantized_model.count()*100
-result_quantized.values[0]
+print(result_quantized.values[0])
 
 df_pruned_model = df_model_pruned[df_model_pruned["predict_model"]!=2]
 df_pruned_model2 = df_pruned_model[df_pruned_model["sentiment"]==df_pruned_model['predict_model']]
 result_pruned = df_pruned_model2.count()/df_pruned_model.count()*100
-result_pruned.values[0]
+print(result_pruned.values[0])
 
 df_quantized_model_pruned = df_quantized_model_pruned[df_quantized_model_pruned["predict_model"]!=2]
 df_quantized_model_pruned2 = df_quantized_model_pruned[df_quantized_model_pruned["sentiment"]==df_quantized_model_pruned['predict_model']]
 result_quantized_model_pruned = df_quantized_model_pruned2.count()/df_quantized_model_pruned.count()*100
-result_quantized_model_pruned.values[0]
+print(result_quantized_model_pruned.values[0])
