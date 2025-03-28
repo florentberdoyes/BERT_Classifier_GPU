@@ -137,7 +137,7 @@ model_prunedGPU.to(device)
 
 quantized_model_pruned.to("cpu")
 
-RANGE = range(0,5000,500)
+RANGE = range(0,1001,200)
 
 def tab_temps_cpu(n, df, model):
   tab = []
