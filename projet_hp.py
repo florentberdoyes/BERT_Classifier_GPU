@@ -123,14 +123,16 @@ def predict_gpu(text, model, classes):
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-model = model.to("cpu")
+model.to("cpu")
 
 modelGPU = BertForSequenceClassification.from_pretrained(model_name)
-modelGPU = model.to(device)
+modelGPU.to(device)
 
 quantized_model.to("cpu")
 
 model_pruned.to("cpu")
+
+model_prunedGPU = BertForSequenceClassification.from_pretrained(model_name)
 model_prunedGPU.to(device)
 
 quantized_model_pruned.to("cpu")
