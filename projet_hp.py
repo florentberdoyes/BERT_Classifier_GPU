@@ -168,6 +168,9 @@ tab_model_pruned_cpu, df_model_pruned = tab_temps_cpu(n, df, model_pruned)
 tab_quantized_model_pruned_cpu, df_quantized_model_pruned = tab_temps_cpu(n, df, quantized_model_pruned)
 
 from matplotlib import pyplot as plt
+
+plt.figure(figsize=(8, 5))
+
 plt.plot(RANGE, tab_model_cpu, label="Model")
 plt.plot(RANGE, tab_quantized_model_cpu, label="Quantized Model")
 plt.plot(RANGE, tab_model_pruned_cpu, label="Pruned Model")
@@ -184,6 +187,8 @@ tab_model_gpu = tab_temps_gpu(n, df, modelGPU)
 tab_model_pruned_gpu = tab_temps_gpu(n, df, model_prunedGPU)
 # tab_quantized_model_pruned_gpu = tab_temps_gpu(n, df, quantized_model_pruned)
 
+plt.figure(figsize=(8, 5))
+
 plt.plot(RANGE, tab_model_gpu, label="Model")
 # plt.plot(RANGE, tab_quantized_model_gpu, label="Quantized Model")
 plt.plot(RANGE, tab_model_pruned_gpu, label="Pruned Model")
@@ -195,6 +200,8 @@ plt.ylabel("Temps d'exécution (en secondes)")
 plt.savefig("comparaison_modeles_gpu.png", dpi=300)
 plt.show()
 
+plt.figure(figsize=(8, 5))
+
 plt.plot(RANGE, tab_model_cpu, label="Model CPU")
 plt.plot(RANGE, tab_model_gpu, label="Model GPU")
 plt.legend()
@@ -203,6 +210,8 @@ plt.xlabel("Taille du dataset")
 plt.ylabel("Temps d'exécution (en secondes)")
 plt.savefig("comparaison_modeles_cpu_gpu.png", dpi=300)
 plt.show()
+
+plt.figure(figsize=(8, 5))
 
 plt.plot(RANGE, tab_model_pruned_cpu, label="Model CPU")
 plt.plot(RANGE, tab_model_pruned_gpu, label="Model GPU")
